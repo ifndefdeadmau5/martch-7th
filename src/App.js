@@ -1,24 +1,86 @@
-import logo from './logo.svg';
-import './App.css';
+import { useReactiveVar } from "@apollo/client";
+import {
+  AppBar,
+  Box,
+  Container,
+  createMuiTheme,
+  IconButton,
+  makeStyles,
+  ThemeProvider,
+  Toolbar,
+  Typography,
+  Switch,
+  Badge,
+} from "@material-ui/core";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import MenuIcon from "@material-ui/icons/Menu";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import { useState } from "react";
+import { cartItemsVar } from "./cache";
+import ProductList from "./ProductList";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
 
 function App() {
+  const classes = useStyles();
+  const [dark, setDark] = useState(true);
+  const items = useReactiveVar(cartItemsVar);
+
+  const theme = createMuiTheme({
+    palette: {
+      type: dark ? "dark" : "light",
+      primary: {
+        main: "#e91e63",
+      },
+      secondary: {
+        main: "#ffc400",
+      },
+    },
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            edge="start"
+            className="button lg xs"
+            color="inherit"
+            aria-label="menu"
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            News
+          </Typography>
+          <Switch
+            value={dark}
+            onChange={(event, checked) => setDark(checked)}
+          />
+          <IconButton aria-label="cart">
+            <Badge badgeContent={items.length} color="secondary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Container maxWidth="lg">
+        <Box pt={7}>
+          <ProductList />
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
 }
 
